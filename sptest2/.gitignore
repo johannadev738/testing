@@ -1,0 +1,23 @@
+# Local context, credentials and development tooling
+.ai-context/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+*.keystore
+*.jks
+.aws/
+.vs/
+.vscode/
+.dotnet/
+.nuget/
+.cache/
+TestResults/
+*.log
+*.user
+*.suo
+credentials*.json
+secrets*.json

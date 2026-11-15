@@ -1,0 +1,235 @@
+{
+  "id": "residential-welfare-call",
+  "title": "Residential Welfare Call",
+  "summary": "A caregiver has called about an autistic adult in distress outside their home. You are first on scene.",
+  "status": "ILLUSTRATIVE DRAFT - not yet reviewed or approved by NASC",
+  "disclaimer": "This feedback is illustrative only. It has not been reviewed or approved by the National Autism Safety Council and does not measure real-world officer competence. Autistic people differ widely; Sam is one fictional example, not a template.",
+  "nonGuaranteeNote": "A well-matched approach reduces risk but does not guarantee a calm result, and a difficult result does not always mean a mistake was made. Real encounters depend on the person, the setting and many things outside an officer's control.",
+  "dispatchBriefing": "DISPATCH  10:42\nWELFARE CHECK - 42 MAPLE COURT\n\nCaller: Dana Reyes, caregiver. She reports that Sam, an adult in her care who is autistic, became very distressed after a loud delivery and a nearby alarm, and is now outside the house.\n\nSam is not reported to be armed or to have hurt anyone. Dana says Sam will not come inside and seems to be getting more upset.\n\nNo further information. No known history at this address.\n\nYour unit is first to arrive.",
+  "startNodeId": "arrive",
+  "initial": { "distress": 55, "trust": 20, "sensory": 70 },
+  "criteria": [
+    { "id": "c-slow", "principle": "S", "title": "Approach and communicate without rushing", "description": "Moves, speaks and closes distance at a measured pace, and avoids sudden movement or unexpected touch.", "suggestion": "Slow your approach: stop at a distance, keep movement and voice slow and low, and avoid touch or crowding unless it is needed for safety." },
+    { "id": "c-sensory", "principle": "L", "title": "Reduce unnecessary noise and sensory input", "description": "Lowers sirens, lights, radios and other avoidable sensory input before and during contact.", "suggestion": "Before making contact, turn off sirens and flashing lights where it is safe, turn radios down and ask others nearby to reduce noise." },
+    { "id": "c-onespeaker", "principle": "L", "title": "One officer speaks at a time", "description": "Agrees a single lead voice; additional officers stay quiet and give space.", "suggestion": "Agree who leads before approaching. Additional officers stay back, keep quiet and avoid speaking over each other." },
+    { "id": "c-observe", "principle": "O", "title": "Gather information before deciding", "description": "Observes from a distance and asks caregivers about safety, triggers and supports before choosing an approach.", "suggestion": "Take a moment to observe from a distance and speak with caregivers about safety, triggers and what helps before choosing an approach." },
+    { "id": "c-wait", "principle": "W", "title": "Allow processing time", "description": "Uses short, simple language, then waits 10-20 seconds before repeating or rephrasing.", "suggestion": "After a short, simple request, wait 10-20 seconds in silence before repeating or rephrasing. Repeating sooner can restart the person's processing." }
+  ],
+  "objectives": [
+    { "id": "obj-observe", "text": "Observe the scene before engaging", "flags": ["observedScene"] },
+    { "id": "obj-sensory", "text": "Reduce unnecessary noise (siren, radio, mower)", "flags": ["sirenOff", "radioLow", "neighbourQuiet"] },
+    { "id": "obj-info", "text": "Gather information from Dana", "flags": ["spokeToCaregiver"] },
+    { "id": "obj-contact", "text": "Make contact with Sam without rushing", "flags": ["madeContact"] }
+  ],
+  "interactions": [
+    { "id": "car_siren", "prompt": "Turn off siren and lights", "principle": "L", "alignment": "aligned", "criterionId": "c-sensory", "blockedFlags": ["sirenOff"], "oneShot": true,
+      "feedback": "Sirens and flashing lights are intense sensory input. Switching them off early lowers the load on everyone before any contact, and is usually safe when no immediate danger is visible.",
+      "effects": { "sensory": -20, "setFlags": ["sirenOff"] } },
+    { "id": "car_radio", "prompt": "Turn down your radio", "principle": "L", "alignment": "aligned", "criterionId": "c-sensory", "blockedFlags": ["radioLow"], "oneShot": true,
+      "feedback": "Radio chatter is easy to forget but adds unpredictable noise near the person. Turning it down (or stepping away from it) is a small, low-risk change.",
+      "effects": { "sensory": -10, "setFlags": ["radioLow"] } },
+    { "id": "neighbour_mower", "prompt": "Quietly ask the neighbour to pause the mower", "principle": "L", "alignment": "aligned", "criterionId": "c-sensory", "blockedFlags": ["neighbourQuiet"], "oneShot": true,
+      "feedback": "Other people nearby can often help reduce noise if asked politely and briefly. Asking quietly, rather than shouting over the mower, avoids adding more noise.",
+      "effects": { "sensory": -20, "setFlags": ["neighbourQuiet"] } }
+  ],
+  "nodes": [
+    {
+      "id": "arrive", "kind": "decision", "trigger": "auto", "speakerName": "Scene",
+      "text": "You arrive at 42 Maple Court. Your lights and siren are still running and your radio is turned up. At the end of the driveway a young adult, Sam, is pacing with both hands pressed over their ears. A woman on the porch, Dana Reyes, is waving you over. Next door, a lawn mower is running.",
+      "options": [
+        { "id": "arrive_quiet", "text": "Switch off the siren and lights, then step out slowly.", "principle": "L", "alignment": "aligned", "criterionId": "c-sensory",
+          "feedback": "Reducing sirens and flashing lights before contact lowers sensory input early. Nothing visible suggests an immediate threat, so this is a reasonable first step.",
+          "effects": { "sensory": -30, "trust": 5, "setFlags": ["sirenOff"] }, "next": "scene_look" },
+        { "id": "arrive_fast", "text": "Leave the lights on and head straight to Sam to find out what is wrong.", "principle": "S", "alignment": "misaligned", "criterionId": "c-slow",
+          "feedback": "Moving quickly toward a distressed person while lights and noise are still running adds pressure and unpredictability. A slower start gives everyone more room.",
+          "effects": { "distress": 10, "sensory": 5, "trust": -5 }, "next": "rushed_approach" },
+        { "id": "arrive_backup", "text": "Request additional units before getting out.", "principle": "L", "alignment": "mixed", "criterionId": "c-onespeaker",
+          "feedback": "Backup is sometimes right when there is a risk to safety. Here nothing visible suggests a threat, and extra vehicles, officers and voices can increase crowding and noise.",
+          "effects": { "sensory": 10, "setFlags": ["backupRequested"] }, "next": "scene_look" }
+      ]
+    },
+    {
+      "id": "scene_look", "kind": "decision", "trigger": "auto", "speakerName": "Scene",
+      "text": "You are out of the car. Before you make contact with anyone, you have a moment to take in the scene.",
+      "options": [
+        { "id": "look_observe", "text": "Pause by the car and observe: Sam's body language, Dana, the surroundings and any hazards.", "principle": "O", "alignment": "aligned", "criterionId": "c-observe",
+          "feedback": "Gathering information first helps you spot risks, triggers and supports before you commit to an approach.",
+          "effects": { "distress": -3, "setFlags": ["observedScene"] }, "next": "choose_path" },
+        { "id": "look_skip", "text": "Move toward Sam right away to get ahead of the situation.", "principle": "S", "alignment": "misaligned", "criterionId": "c-slow",
+          "feedback": "Skipping observation means you commit to an approach without knowing what is helping or hurting. It also closes distance quickly.",
+          "effects": { "distress": 10, "trust": -5 }, "next": "rushed_approach" }
+      ]
+    },
+    {
+      "id": "rushed_approach", "kind": "decision", "trigger": "auto", "stage": "near_sam", "speakerId": "sam", "speakerName": "Sam",
+      "text": "Sam notices you closing the distance, flinches and backs toward the road, breathing fast.",
+      "options": [
+        { "id": "rush_stop", "text": "Stop, step back, lower your voice and give Sam space.", "principle": "S", "alignment": "aligned", "criterionId": "c-slow",
+          "feedback": "Stopping and creating space is a good recovery. It will not erase the earlier pressure, but it gives Sam a chance to settle.",
+          "effects": { "distress": -5, "trust": 3 }, "next": "calm_quiet",
+          "branches": [ { "stats": [ { "stat": "sensory", "op": ">=", "value": 50 } ], "next": "calm_noisy" } ] },
+        { "id": "rush_continue", "text": "Keep going and tell Sam firmly to stop moving.", "principle": "S", "alignment": "misaligned", "criterionId": "c-slow",
+          "feedback": "Continuing to close distance and giving a firm command to someone who is already overwhelmed usually raises distress further.",
+          "effects": { "distress": 20, "trust": -10 }, "next": "commands_escalate" }
+      ]
+    },
+    {
+      "id": "choose_path", "kind": "decision", "trigger": "interact", "speakerName": "Scene",
+      "hint": "Look around. You can lower noise using the patrol car, your radio and the neighbour's mower. Speak with Dana or Sam (E) when you are ready to engage.",
+      "text": "You decide how to engage. You can still change things around you before you start.",
+      "options": [
+        { "id": "path_calm", "text": "Approach Sam slowly and calmly, keeping some distance.", "principle": "S", "alignment": "aligned", "criterionId": "c-slow",
+          "feedback": "A slow, calm approach from a distance respects Sam's space. How well it works also depends on the noise around you and on what you know about Sam.",
+          "effects": { "trust": 5 }, "next": "calm_quiet",
+          "branches": [
+            { "requiresFlags": ["backupRequested"], "blockedFlags": ["secondOfficerHandled"], "next": "second_officer" },
+            { "stats": [ { "stat": "sensory", "op": ">=", "value": 50 } ], "next": "calm_noisy" } ] },
+        { "id": "path_commands", "text": "Call out repeated, loud commands: 'Sam! Stop! Come here! Now!'", "principle": "W", "alignment": "misaligned", "criterionId": "c-wait",
+          "feedback": "Repeated loud commands add noise and pressure and leave no time to process. Short, quiet requests followed by waiting tend to work better.",
+          "effects": { "distress": 20, "trust": -10, "sensory": 10 }, "next": "commands_escalate" },
+        { "id": "path_caregiver", "text": "Speak to Dana first and gather information.", "principle": "O", "alignment": "aligned", "criterionId": "c-observe",
+          "feedback": "Caregivers can tell you about safety, triggers and what helps. Their knowledge is specific to this person, so ask rather than assume.",
+          "effects": { "trust": 3, "setFlags": ["spokeToCaregiver"] }, "oneShot": true, "next": "caregiver_talk" },
+        { "id": "path_noise", "text": "Take a moment to reduce unnecessary noise around the scene first.", "principle": "L", "alignment": "aligned", "criterionId": "c-sensory",
+          "feedback": "Lowering avoidable noise before engaging reduces the load on Sam and makes your own communication easier to take in.",
+          "effects": { "sensory": -25, "setFlags": ["noiseLowered", "sirenOff", "radioLow", "neighbourQuiet"] }, "oneShot": true, "next": "choose_path" }
+      ]
+    },
+    {
+      "id": "caregiver_talk", "kind": "decision", "trigger": "auto", "stage": "dana_comes", "speakerId": "dana", "speakerName": "Dana Reyes",
+      "text": "Dana comes to meet you, keeping her voice low. 'Thank you for coming. Sam got overwhelmed after a delivery truck and then an alarm went off. They have been outside about twenty minutes.'",
+      "options": [
+        { "id": "cg_supports", "text": "Ask what usually helps Sam when they are overwhelmed, and what to avoid.", "principle": "O", "alignment": "aligned", "criterionId": "c-observe",
+          "response": "'Quiet, space and their headphones. Short sentences, then give them time. And please don't grab them - that makes it much worse.'",
+          "feedback": "Asking what helps gives you information you could not get by observing. These supports are specific to Sam; another person may need something different.",
+          "effects": { "trust": 8, "setFlags": ["knowsSupports"] }, "oneShot": true, "next": "caregiver_talk" },
+        { "id": "cg_safety", "text": "Ask what happened and whether anyone is at risk.", "principle": "O", "alignment": "aligned", "criterionId": "c-observe",
+          "response": "'No one is hurt and there is nothing dangerous out here. Sam is overwhelmed, not angry.'",
+          "feedback": "Confirming whether there is any risk helps you decide how much urgency is actually needed.",
+          "effects": { "setFlags": ["knowsSafety"] }, "oneShot": true, "next": "caregiver_talk" },
+        { "id": "cg_inside", "text": "Ask Dana to take Sam inside right now so you can clear the area.", "principle": "L", "alignment": "mixed", "criterionId": "c-slow",
+          "response": "Dana frowns. 'They won't go anywhere while they're like this. Pushing it makes it worse.'",
+          "feedback": "Moving someone away from noise can help, but directing a distressed person quickly can add pressure. Asking Dana what is realistic first would have been better.",
+          "effects": { "distress": 5, "trust": -3 }, "oneShot": true, "next": "choose_path" },
+        { "id": "cg_return", "text": "Thank Dana and go back to Sam.", "principle": "", "alignment": "neutral",
+          "feedback": "", "next": "choose_path" }
+      ]
+    },
+    {
+      "id": "second_officer", "kind": "decision", "trigger": "auto", "speakerName": "Scene",
+      "onEnter": { "setFlags": ["backupArrived"] },
+      "text": "Your backup unit pulls in with its lights flashing. The second officer steps out and starts calling to Sam just as you begin to speak.",
+      "options": [
+        { "id": "so_one_voice", "text": "Agree on one lead voice: the second officer holds back, turns the lights off and stays quiet.", "principle": "L", "alignment": "aligned", "criterionId": "c-onespeaker",
+          "feedback": "One officer speaking at a time, with others staying back and quiet, reduces crowding and competing instructions.",
+          "effects": { "sensory": -15, "setFlags": ["secondOfficerHandled"] }, "next": "calm_quiet",
+          "branches": [ { "stats": [ { "stat": "sensory", "op": ">=", "value": 50 } ], "next": "calm_noisy" } ] },
+        { "id": "so_both", "text": "Both of you speak to Sam at once to be sure they hear.", "principle": "L", "alignment": "misaligned", "criterionId": "c-onespeaker",
+          "feedback": "Two voices at once, plus extra lights, means more input to process and unclear instructions.",
+          "effects": { "distress": 15, "sensory": 15, "trust": -5, "setFlags": ["secondOfficerHandled"] }, "next": "commands_escalate" }
+      ]
+    },
+    {
+      "id": "calm_quiet", "kind": "decision", "trigger": "auto", "stage": "near_sam", "speakerId": "sam", "speakerName": "Sam",
+      "text": "You slow down and stop a few metres away, side-on, hands visible. Sam keeps their eyes on the ground and does not answer.",
+      "options": [
+        { "id": "cq_wait", "text": "Say your name in a few short, quiet words, then wait 10-20 seconds without repeating.", "principle": "W", "alignment": "aligned", "criterionId": "c-wait", "waitSeconds": 15,
+          "feedback": "Short, simple language followed by a pause gives time to process. Silence can feel long, but it is often part of the response.",
+          "effects": { "trust": 5, "distress": -5, "setFlags": ["madeContact"] }, "next": "sam_hesitant",
+          "branches": [ { "requiresFlags": ["knowsSupports"], "next": "sam_supported" } ] },
+        { "id": "cq_repeat", "text": "Repeat the question a little louder after a few seconds.", "principle": "W", "alignment": "misaligned", "criterionId": "c-wait",
+          "feedback": "Repeating or raising your voice before processing time has passed can restart the person's processing and add pressure.",
+          "effects": { "distress": 12, "trust": -8 }, "next": "sam_overloaded" },
+        { "id": "cq_touch", "text": "Step in and gently guide Sam toward the porch by the arm.", "principle": "S", "alignment": "misaligned", "criterionId": "c-slow",
+          "feedback": "Unexpected touch can be very distressing for many autistic people. Offering a choice or asking first is usually safer.",
+          "effects": { "distress": 25, "trust": -15 }, "next": "commands_escalate" }
+      ]
+    },
+    {
+      "id": "calm_noisy", "kind": "decision", "trigger": "auto", "stage": "near_sam", "speakerId": "sam", "speakerName": "Sam",
+      "text": "You approach slowly, but the scene is still loud. Sam flinches at each burst of noise, covers their ears and drifts away from you.",
+      "options": [
+        { "id": "cn_lower", "text": "Pause, step back and deal with the noise first: siren off, radio down, ask the neighbour to pause.", "principle": "L", "alignment": "aligned", "criterionId": "c-sensory",
+          "feedback": "A slow approach is not enough when the environment is overwhelming. Fixing what you can control, such as noise, comes before communication.",
+          "effects": { "sensory": -35, "trust": 3, "setFlags": ["noiseLowered", "sirenOff", "radioLow", "neighbourQuiet"] }, "next": "calm_quiet" },
+        { "id": "cn_louder", "text": "Keep going and raise your voice so Sam can hear you over the noise.", "principle": "L", "alignment": "misaligned", "criterionId": "c-sensory",
+          "feedback": "Talking louder over noise adds to the sensory load. Reducing the noise is usually more effective than competing with it.",
+          "effects": { "distress": 20, "sensory": 10, "trust": -10 }, "next": "commands_escalate" },
+        { "id": "cn_wait", "text": "Stay where you are and wait quietly for the noise to pass.", "principle": "W", "alignment": "mixed", "criterionId": "c-sensory",
+          "feedback": "Waiting is a reasonable instinct, but the noise will not stop on its own. Acting on what you can change is better than hoping it passes.",
+          "effects": { "distress": 3 }, "oneShot": true, "next": "calm_noisy" }
+      ]
+    },
+    {
+      "id": "commands_escalate", "kind": "decision", "trigger": "auto", "stage": "near_sam", "speakerId": "sam", "speakerName": "Sam",
+      "text": "Sam's breathing quickens. They cover their ears, back away toward the road and stop responding to you. The situation is escalating.",
+      "options": [
+        { "id": "ce_deescalate", "text": "Stop talking, step back, lower your stance and give Sam room.", "principle": "S", "alignment": "aligned", "criterionId": "c-slow",
+          "feedback": "Stopping, stepping back and giving space is the right recovery. How far it can help depends on how much distress has already built up.",
+          "effects": { "distress": -10, "trust": 2 }, "next": "calm_quiet",
+          "branches": [
+            { "stats": [ { "stat": "distress", "op": ">=", "value": 75 } ], "next": "outcome_difficult" },
+            { "stats": [ { "stat": "sensory", "op": ">=", "value": 50 } ], "next": "calm_noisy" } ] },
+        { "id": "ce_louder", "text": "Repeat the commands louder and move closer to stop Sam leaving.", "principle": "W", "alignment": "misaligned", "criterionId": "c-wait",
+          "feedback": "More volume and closer distance to someone who is already overwhelmed tends to escalate the situation further.",
+          "effects": { "distress": 20, "trust": -10 }, "next": "outcome_difficult" }
+      ]
+    },
+    {
+      "id": "sam_supported", "kind": "decision", "trigger": "auto", "stage": "near_sam", "speakerId": "sam", "speakerName": "Sam",
+      "text": "Because Dana told you what helps, you kept your words few and your voice low. After a long pause Sam lifts their head slightly. 'Too loud,' they say quietly. 'Headphones.'",
+      "options": [
+        { "id": "ss_offer", "text": "Offer a simple choice: 'Would you like to sit on the step? Dana can bring your headphones.'", "principle": "S", "alignment": "aligned", "criterionId": "c-slow",
+          "feedback": "Offering a clear, simple choice returns some control to the person and keeps the pace slow.",
+          "effects": { "distress": -20, "trust": 10 }, "next": "outcome_positive" },
+        { "id": "ss_questions", "text": "Ask several quick questions: what happened, are you okay, do you take any medication?", "principle": "W", "alignment": "misaligned", "criterionId": "c-wait",
+          "feedback": "Several questions in a row can overload someone who has only just started to respond. One short question at a time, with time to answer, is easier to manage.",
+          "effects": { "distress": 15, "trust": -10 }, "next": "sam_overloaded" }
+      ]
+    },
+    {
+      "id": "sam_hesitant", "kind": "decision", "trigger": "auto", "stage": "near_sam", "speakerId": "sam", "speakerName": "Sam",
+      "text": "Sam glances at you once, then looks away. They do not speak. It is not clear whether they understood you or just need more time.",
+      "options": [
+        { "id": "sh_wait", "text": "Stay calm and quiet, and wait another 10-20 seconds before saying anything.", "principle": "W", "alignment": "aligned", "criterionId": "c-wait", "waitSeconds": 12,
+          "feedback": "Silence is not necessarily refusal. Giving more time is often the right call, although it does not always lead to a clear result.",
+          "effects": { "trust": 5, "distress": -5 }, "next": "outcome_mixed",
+          "branches": [ { "stats": [ { "stat": "trust", "op": ">=", "value": 45 } ], "next": "outcome_positive" } ] },
+        { "id": "sh_dana", "text": "Quietly ask Dana to help communicate.", "principle": "O", "alignment": "mixed", "criterionId": "c-observe",
+          "response": "Dana speaks to Sam gently and they walk together toward the door.",
+          "feedback": "Involving a trusted person can help, but the officer stepping back and letting Dana lead should be a deliberate choice rather than a default.",
+          "effects": { "trust": 5 }, "next": "outcome_mixed" },
+        { "id": "sh_repeat", "text": "Ask again in a different way, hoping that gets through.", "principle": "W", "alignment": "misaligned", "criterionId": "c-wait",
+          "feedback": "Rephrasing too soon can add new language to process before the first request has been understood.",
+          "effects": { "distress": 10, "trust": -5 }, "next": "sam_overloaded" }
+      ]
+    },
+    {
+      "id": "sam_overloaded", "kind": "decision", "trigger": "auto", "stage": "near_sam", "speakerId": "sam", "speakerName": "Sam",
+      "text": "Sam's shoulders tighten and they turn away, hands over their ears, no longer responding. Too many words arrived too quickly.",
+      "options": [
+        { "id": "ov_back", "text": "Stop talking, step back and give Sam space and time.", "principle": "S", "alignment": "aligned", "criterionId": "c-slow",
+          "feedback": "Backing off and going quiet is the best available recovery. It may not fully resolve things, but it stops the pressure building.",
+          "effects": { "distress": -10, "trust": 2 }, "next": "outcome_mixed" },
+        { "id": "ov_push", "text": "Press on for an answer.", "principle": "W", "alignment": "misaligned", "criterionId": "c-wait",
+          "feedback": "Pressing someone who is already overloaded for an answer is likely to escalate the situation.",
+          "effects": { "distress": 20 }, "next": "outcome_difficult" }
+      ]
+    },
+    {
+      "id": "outcome_positive", "kind": "outcome", "outcomeTone": "positive", "speakerName": "Outcome",
+      "outcomeTitle": "Calm resolution",
+      "outcomeSummary": "Sam sits on the porch step with their headphones on and Dana beside them. There was no force and no further escalation, and you have time to arrange follow-up support."
+    },
+    {
+      "id": "outcome_mixed", "kind": "outcome", "outcomeTone": "mixed", "speakerName": "Outcome",
+      "outcomeTitle": "Safe, but unresolved",
+      "outcomeSummary": "Sam retreats inside with Dana. Nobody is hurt, but the encounter ends without a clear resolution and Dana is unsure what happens next. Following up with the supports Dana describes would matter here."
+    },
+    {
+      "id": "outcome_difficult", "kind": "outcome", "outcomeTone": "difficult", "speakerName": "Outcome",
+      "outcomeTitle": "Escalation",
+      "outcomeSummary": "Sam runs toward the road and Dana calls out in alarm. Additional units and medical support are needed, and a situation that began as a welfare check has become a safety risk."
+    }
+  ]
+}

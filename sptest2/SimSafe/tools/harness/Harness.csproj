@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Standalone runner for the engine-independent code. It compiles the REAL Core sources and the REAL
+    SessionTests.cs, but runs them against a tiny NUnit shim instead of Unity's Test Runner.
+    It does not exercise any UnityEngine code and is not a substitute for running the EditMode tests in Unity.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <UseAppHost>false</UseAppHost>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Assets\SimSafe\Scripts\Core\*.cs" />
+    <Compile Include="..\..\Assets\SimSafe\Tests\EditMode\*Tests.cs" />
+    <Compile Include="NUnitShim.cs" />
+    <Compile Include="HarnessScenarioSource.cs" />
+    <Compile Include="Program.cs" />
+  </ItemGroup>
+</Project>

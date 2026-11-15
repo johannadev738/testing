@@ -1,0 +1,14 @@
+{
+  "name": "SimSafe.Runtime",
+  "rootNamespace": "SimSafe",
+  "references": [ "SimSafe.Core" ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
